@@ -21,6 +21,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { UtensilsCrossed, Carrot, CookingPot, Plus, Minus } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
+import { automaticDependencyManagement } from '@/ai/flows/automatic-dependency-management';
 
 type ItemType = 'recipe' | 'ingredient' | 'kitchen utensil';
 type DependencyMode = 'force' | 'warn';
@@ -96,8 +97,8 @@ export default function Home() {
     newItems = newItems.map(item => {
       if (categoryItemNames.has(item.name)) {
         const isRequired = requiredDependencies.has(item.name);
-        if (keepDependencies && dependencyMode === 'force' && isRequired) {
-          return item; // Don't deselect forced items
+        if (keepDependencies && dependencyMode === 'force' && isRequired && !isSelectingAll) {
+          return item; // Don't deselect forced items when unchecking
         }
         return { ...item, selected: isSelectingAll };
       }
@@ -107,7 +108,7 @@ export default function Home() {
     if (keepDependencies && isSelectingAll) {
       const depsToSelect = new Set<string>();
       categoryItems.forEach(item => {
-        if (item.dependencies) {
+        if(newItems.find(i => i.name === item.name)?.selected && item.dependencies) {
           item.dependencies.forEach(dep => depsToSelect.add(dep));
         }
       });
@@ -125,11 +126,23 @@ export default function Home() {
 
     newItems = newItems.map(item => {
       const isRequired = requiredDependencies.has(item.name);
-      if (keepDependencies && dependencyMode === 'force' && isRequired) {
-        return item; // Don't deselect forced items
+      if (keepDependencies && dependencyMode === 'force' && isRequired && !isSelectingAll) {
+        return item; // Don't deselect forced items when unchecking
       }
       return { ...item, selected: isSelectingAll };
     });
+
+    if (keepDependencies && isSelectingAll) {
+      const depsToSelect = new Set<string>();
+      newItems.forEach(item => {
+        if (item.selected && item.dependencies) {
+          item.dependencies.forEach(dep => depsToSelect.add(dep));
+        }
+      });
+      newItems = newItems.map((item) =>
+        depsToSelect.has(item.name) ? { ...item, selected: true } : item
+      );
+    }
 
     setItems(newItems);
   };
