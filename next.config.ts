@@ -1,6 +1,6 @@
 import type {NextConfig} from 'next';
 
-const repo = 'your-repo-name';
+const repo = 'dependency-selection-tree';
 const isProd = process.env.NODE_ENV === 'production';
 
 const nextConfig: NextConfig = {
