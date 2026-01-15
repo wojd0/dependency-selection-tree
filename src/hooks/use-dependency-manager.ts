@@ -1,25 +1,30 @@
 "use client";
 
 import { useState, useMemo, useCallback } from 'react';
-import { Item, ItemType, DependencyMode, DataSet, allItemTypes } from '@/app/data';
+import { Item, ItemType, DependencyMode, DataSet, categoryConfigs } from '@/app/data';
 
 export function useDependencyManager(initialItems: Item[], initialDataSet: DataSet) {
   const [dataSet, setDataSet] = useState<DataSet>(initialDataSet);
   const [items, setItems] = useState<Item[]>(initialItems);
   const [keepDependencies, setKeepDependencies] = useState(false);
   const [dependencyMode, setDependencyMode] = useState<DependencyMode>('force');
-  const [openCategories, setOpenCategories] = useState<Record<string, boolean>>(() => {
+  
+  const initialOpenState = useCallback((newDataSet: DataSet) => {
     const initialState: Record<string, boolean> = {};
-    initialItems.forEach(item => {
-      initialState[item.type] = true;
+    const categories = Object.keys(categoryConfigs[newDataSet]);
+    categories.forEach(category => {
+      initialState[category] = true;
     });
     return initialState;
-  });
+  }, []);
+
+  const [openCategories, setOpenCategories] = useState<Record<string, boolean>>(initialOpenState(initialDataSet));
 
   const handleDataSetChange = (newDataSet: DataSet, newItems: Item[]) => {
     setDataSet(newDataSet);
     setItems(newItems);
     setKeepDependencies(false);
+    setOpenCategories(initialOpenState(newDataSet));
   };
 
   const requiredDependencies = useMemo(() => {
@@ -115,19 +120,21 @@ export function useDependencyManager(initialItems: Item[], initialDataSet: DataS
   }, [items]);
 
   const areAllCategoriesOpen = useMemo(() => {
-    return allItemTypes.every(category => openCategories[category] !== false);
-  }, [openCategories]);
+    const currentCategories = Object.keys(categoryConfigs[dataSet]);
+    return currentCategories.every(category => openCategories[category]);
+  }, [openCategories, dataSet]);
 
   const toggleAllCategories = useCallback(() => {
     setOpenCategories(prevOpenCategories => {
       const nextState = !areAllCategoriesOpen;
       const newOpenCategories: Record<string, boolean> = {};
-      for (const key in prevOpenCategories) {
+      const currentCategories = Object.keys(categoryConfigs[dataSet]);
+      currentCategories.forEach(key => {
         newOpenCategories[key] = nextState;
-      }
+      });
       return newOpenCategories;
     });
-  }, [areAllCategoriesOpen]);
+  }, [areAllCategoriesOpen, dataSet]);
 
   return {
     dataSet,
