@@ -53,6 +53,7 @@ export default function Home() {
   const [dependencyMode, setDependencyMode] = useState<DependencyMode>('force');
 
   const requiredDependencies = useMemo(() => {
+    if (!keepDependencies) return new Set<string>();
     const deps = new Set<string>();
     items.forEach(item => {
       if (item.selected && item.dependencies) {
@@ -60,7 +61,7 @@ export default function Home() {
       }
     });
     return deps;
-  }, [items]);
+  }, [items, keepDependencies]);
 
   const handleSelectionChange = (itemName: string, checked: boolean) => {
     let newItems = items.map((item) =>
@@ -109,24 +110,28 @@ export default function Home() {
                 onCheckedChange={setKeepDependencies}
               />
             </div>
-            <Separator />
-            <div className="space-y-2">
-               <Label className="text-base font-medium">Dependency Rule</Label>
-               <RadioGroup
-                 value={dependencyMode}
-                 onValueChange={(value) => setDependencyMode(value as DependencyMode)}
-                 className="flex gap-4"
-               >
-                 <div className="flex items-center space-x-2">
-                   <RadioGroupItem value="force" id="force" />
-                   <Label htmlFor="force">Force (Disable deselect)</Label>
-                 </div>
-                 <div className="flex items-center space-x-2">
-                   <RadioGroupItem value="warn" id="warn" />
-                   <Label htmlFor="warn">Warn (Show error)</Label>
-                 </div>
-               </RadioGroup>
-            </div>
+            {keepDependencies && (
+              <>
+                <Separator />
+                <div className="space-y-2">
+                  <Label className="text-base font-medium">Dependency Rule</Label>
+                  <RadioGroup
+                    value={dependencyMode}
+                    onValueChange={(value) => setDependencyMode(value as DependencyMode)}
+                    className="flex gap-4"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="force" id="force" />
+                      <Label htmlFor="force">Force (Disable deselect)</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="warn" id="warn" />
+                      <Label htmlFor="warn">Warn (Show error)</Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+              </>
+            )}
           </div>
 
           <Separator className="mb-4" />
@@ -149,8 +154,8 @@ export default function Home() {
                       <div className="grid gap-2 pt-2">
                         {categoryItems.map((item) => {
                            const isRequired = requiredDependencies.has(item.name);
-                           const isDisabled = dependencyMode === 'force' && isRequired && !item.selected;
-                           const isInvalid = dependencyMode === 'warn' && isRequired && !item.selected;
+                           const isDisabled = keepDependencies && dependencyMode === 'force' && isRequired && item.selected;
+                           const isInvalid = keepDependencies && dependencyMode === 'warn' && isRequired && !item.selected;
 
                            return (
                             <div
