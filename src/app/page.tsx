@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from 'react';
-import { initialItems, Item } from '@/app/data';
+import { initialItems, Item, ItemType } from '@/app/data';
 import {
   Card,
   CardContent,
@@ -21,9 +21,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { UtensilsCrossed, Carrot, CookingPot, Plus, Minus } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
-import { automaticDependencyManagement } from '@/ai/flows/automatic-dependency-management';
 
-type ItemType = 'recipe' | 'ingredient' | 'kitchen utensil';
 type DependencyMode = 'force' | 'warn';
 
 const categoryConfig: Record<

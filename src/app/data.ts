@@ -1,4 +1,5 @@
-import type { ItemType } from '@/ai/flows/automatic-dependency-management';
+
+export type ItemType = 'recipe' | 'ingredient' | 'kitchen utensil';
 
 export interface Item {
   name: string;
