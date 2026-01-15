@@ -6,7 +6,7 @@ const isProd = process.env.NODE_ENV === 'production';
 const nextConfig: NextConfig = {
   output: 'export',
   // Add assetPrefix so that assets are loaded from the correct path on GitHub Pages
-  assetPrefix: isProd ? `/${repo}/` : '',
+  assetPrefix: isProd ? `/${repo}` : '',
   basePath: isProd ? `/${repo}` : '',
   /* config options here */
   typescript: {
