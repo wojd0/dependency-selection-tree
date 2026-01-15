@@ -3,7 +3,7 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { ChevronsUpDown } from "lucide-react";
+import { ChevronsDownUp, ChevronsUpDown } from "lucide-react";
 
 interface TreeRootNodeProps {
   label: string;
@@ -27,7 +27,11 @@ export function TreeRootNode({ label, icon: Icon, checked, isAllOpen, onCheckedC
           </div>
         </Label>
         <Button variant="ghost" size="icon" className="h-6 w-6" onClick={onToggleAll}>
-          <ChevronsUpDown className="h-4 w-4 text-gray-500" />
+          {isAllOpen ? (
+            <ChevronsDownUp className="h-4 w-4 text-gray-500" />
+          ) : (
+            <ChevronsUpDown className="h-4 w-4 text-gray-500" />
+          )}
           <span className="sr-only">{isAllOpen ? "Collapse all" : "Expand all"}</span>
         </Button>
       </div>
