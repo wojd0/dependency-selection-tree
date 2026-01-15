@@ -68,20 +68,15 @@ export default function Home() {
       item.name === itemName ? { ...item, selected: !!checked } : item
     );
 
-    if (keepDependencies) {
-      const selectedItems = newItems.filter((item) => item.selected);
-      const currentRequiredDeps = new Set<string>();
+    if (keepDependencies && checked) {
+      const selectedItem = newItems.find((item) => item.name === itemName);
 
-      selectedItems.forEach((item) => {
-        if (item.dependencies) {
-          item.dependencies.forEach((dep) => currentRequiredDeps.add(dep));
-        }
-      });
-
-      newItems = newItems.map((item) => {
-        const isRequired = currentRequiredDeps.has(item.name);
-        return { ...item, selected: item.selected || isRequired };
-      });
+      if (selectedItem?.dependencies) {
+        const depsToSelect = new Set(selectedItem.dependencies);
+        newItems = newItems.map((item) =>
+          depsToSelect.has(item.name) ? { ...item, selected: true } : item
+        );
+      }
     }
 
     setItems(newItems);
