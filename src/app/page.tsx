@@ -5,7 +5,6 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
 } from '@/components/ui/card';
 import {
   Select,
@@ -37,7 +36,9 @@ export default function Home() {
     handleSelectAll,
     setOpenCategories,
     setKeepDependencies,
-    setDependencyMode
+    setDependencyMode,
+    toggleAllCategories,
+    areAllCategoriesOpen
   } = useDependencyManager(dataSets.pantry, 'pantry');
 
   const categoryConfig = categoryConfigs[dataSet];
@@ -49,7 +50,6 @@ export default function Home() {
         <CardHeader>
           <div className="flex justify-between items-center">
             <div>
-              <CardTitle className="font-headline text-3xl">Smart Pantry</CardTitle>
               <CardDescription>
                 Select items and their dependencies will be automatically managed.
               </CardDescription>
@@ -89,6 +89,8 @@ export default function Home() {
             onCategorySelectionChange={handleCategorySelectionChange}
             onItemSelectionChange={handleSelectionChange}
             onCategoryOpenChange={setOpenCategories}
+            onToggleAll={toggleAllCategories}
+            areAllCategoriesOpen={areAllCategoriesOpen}
           />
         </CardContent>
       </Card>

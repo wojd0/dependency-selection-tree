@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useMemo } from 'react';
-import { Item, ItemType, DependencyMode, DataSet } from '@/app/data';
+import { useState, useMemo, useCallback } from 'react';
+import { Item, ItemType, DependencyMode, DataSet, allItemTypes } from '@/app/data';
 
 export function useDependencyManager(initialItems: Item[], initialDataSet: DataSet) {
   const [dataSet, setDataSet] = useState<DataSet>(initialDataSet);
@@ -10,7 +10,7 @@ export function useDependencyManager(initialItems: Item[], initialDataSet: DataS
   const [dependencyMode, setDependencyMode] = useState<DependencyMode>('force');
   const [openCategories, setOpenCategories] = useState<Record<string, boolean>>(() => {
     const initialState: Record<string, boolean> = {};
-    items.forEach(item => {
+    initialItems.forEach(item => {
       initialState[item.type] = true;
     });
     return initialState;
@@ -114,6 +114,21 @@ export function useDependencyManager(initialItems: Item[], initialDataSet: DataS
     return 'indeterminate';
   }, [items]);
 
+  const areAllCategoriesOpen = useMemo(() => {
+    return allItemTypes.every(category => openCategories[category] !== false);
+  }, [openCategories]);
+
+  const toggleAllCategories = useCallback(() => {
+    setOpenCategories(prevOpenCategories => {
+      const nextState = !areAllCategoriesOpen;
+      const newOpenCategories: Record<string, boolean> = {};
+      for (const key in prevOpenCategories) {
+        newOpenCategories[key] = nextState;
+      }
+      return newOpenCategories;
+    });
+  }, [areAllCategoriesOpen]);
+
   return {
     dataSet,
     items,
@@ -122,10 +137,12 @@ export function useDependencyManager(initialItems: Item[], initialDataSet: DataS
     openCategories,
     requiredDependencies,
     allSelectedState,
+    areAllCategoriesOpen,
     handleDataSetChange,
     handleSelectionChange,
     handleCategorySelectionChange,
     handleSelectAll,
+    toggleAllCategories,
     setItems,
     setKeepDependencies,
     setDependencyMode,

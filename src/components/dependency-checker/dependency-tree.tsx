@@ -14,10 +14,12 @@ interface DependencyTreeProps {
   keepDependencies: boolean;
   dependencyMode: DependencyMode;
   allSelectedState: boolean | 'indeterminate';
+  areAllCategoriesOpen: boolean;
   onSelectAll: (checked: boolean | 'indeterminate') => void;
   onCategorySelectionChange: (category: ItemType, checked: boolean | 'indeterminate') => void;
   onItemSelectionChange: (itemName: string, checked: boolean) => void;
   onCategoryOpenChange: (updater: (prev: Record<string, boolean>) => Record<string, boolean>) => void;
+  onToggleAll: () => void;
 }
 
 export function DependencyTree({
@@ -29,10 +31,12 @@ export function DependencyTree({
   keepDependencies,
   dependencyMode,
   allSelectedState,
+  areAllCategoriesOpen,
   onSelectAll,
   onCategorySelectionChange,
   onItemSelectionChange,
   onCategoryOpenChange,
+  onToggleAll,
 }: DependencyTreeProps) {
   return (
     <div className="space-y-1">
@@ -41,6 +45,8 @@ export function DependencyTree({
         icon={Package}
         checked={allSelectedState}
         onCheckedChange={onSelectAll}
+        onToggleAll={onToggleAll}
+        isAllOpen={areAllCategoriesOpen}
       >
         {categories.map((category) => {
           const categoryItems = items.filter((item) => item.type === category);
