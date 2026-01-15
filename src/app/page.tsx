@@ -231,7 +231,7 @@ export default function Home() {
         </CardHeader>
         <CardContent>
           <div className="mb-4 space-y-4 rounded-lg border bg-background p-4">
-            <div className="flex items-center justify-end">
+            <div className="flex items-center">
               <div className="flex items-center gap-2">
                 <Switch
                   id="keep-dependencies"
